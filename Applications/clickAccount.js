@@ -657,19 +657,19 @@ async function clickAccount(Nickname, Password, rank, Map, Side, io, tankiConfig
       setTimeout(() => {
         if (!hasBeenClosedByUser) {
           logger.info(`[${Nickname}] - Restarting clicker after 3 minutes in battle`);
-          leaveAccount(Nickname, Password, false, null, io, tankiConfig, proxyUrl)
-          // clickAccount(
-          //   Nickname,
-          //   Password,
-          //   rank,
-          //   Map,
-          //   Side,
-          //   io,
-          //   tankiConfig,
-          //   proxyUrl,
-          // );
+
+          clickAccount(
+            Nickname,
+            Password,
+            rank,
+            Map,
+            Side,
+            io,
+            tankiConfig,
+            proxyUrl,
+          );
         }
-      }, 5 * 1000);
+      }, 180 * 1000);
 
       resolve(`[${Nickname} - Glitched]`);
       closeAll();
