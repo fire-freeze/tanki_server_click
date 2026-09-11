@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tanki Account Control</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script data-purpose="tailwind-config">
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            anthropic: {
+              terracotta: '#D97757',
+              terracottaHover: '#E08567',
+              terracottaMuted: 'rgba(217, 119, 87, 0.12)',
+              sand: '#EDE8DF',
+              parchment: '#F5F3EF',
+              bgDark: '#171513',
+              cardDark: '#1E1B18',
+              cardDarkHover: '#25221E',
+              terminalBg: '#12100F',
+              borderDark: '#322E2A',
+              borderSubtle: '#26221E',
+              sage: '#7E9F85',
+              sageDark: '#223326',
+              amber: '#D4A373',
+              stoneMuted: '#9B948A',
+              stoneLight: '#C7C2B8'
+            }
+          },
+          fontFamily: {
+            serif: ['Newsreader', 'Georgia', 'serif'],
+            sans: ['Plus Jakarta Sans', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Menlo', 'monospace']
+          },
+          boxShadow: {
+            warmGlow: '0 8px 30px -10px rgba(217, 119, 87, 0.15)',
+            warmBorder: '0 0 0 1px #322E2A, 0 8px 24px -4px rgba(0, 0, 0, 0.5)',
+            cardHover: '0 12px 32px -8px rgba(0, 0, 0, 0.7), 0 0 0 1px #433D37'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #171513; }
+    ::-webkit-scrollbar-thumb { background: #322E2A; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #D97757; }
+
+    .claude-noise {
+      background-image: radial-gradient(rgba(217, 119, 87, 0.03) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+
+    @keyframes subtlePulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.55; transform: scale(0.92); }
+    }
+    .status-pulse { animation: subtlePulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.97); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .animate-fadeIn { animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  </style>
+</head>
+
+<body class="bg-anthropic-bgDark text-anthropic-sand font-sans antialiased min-h-screen claude-noise flex flex-col selection:bg-anthropic-terracotta selection:text-white">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 border-b border-anthropic-borderDark bg-anthropic-bgDark/90 backdrop-blur-md px-4 lg:px-8 py-3.5">
+    <div class="max-w-[1760px] mx-auto flex items-center justify-between gap-4">
+      <div class="flex items-center gap-4">
+        <div class="w-9 h-9 rounded-xl bg-anthropic-terracottaMuted border border-anthropic-terracotta/30 flex items-center justify-center text-anthropic-terracotta shadow-warmGlow">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2a1 1 0 0 1 1 1v2.05a7.97 7.97 0 0 1 4.95 2.05l1.45-1.45a1 1 0 1 1 1.41 1.41l-1.45 1.45A7.97 7.97 0 0 1 20.95 13H23a1 1 0 1 1 0 2h-2.05a7.97 7.97 0 0 1-2.05 4.95l1.45 1.45a1 1 0 1 1-1.41 1.41l-1.45-1.45A7.97 7.97 0 0 1 13 22.95V25a1 1 0 1 1-2 0v-2.05a7.97 7.97 0 0 1-4.95-2.05l-1.45 1.45a1 1 0 1 1-1.41-1.41l-1.45-1.45A7.97 7.97 0 0 1 3.05 15H1a1 1 0 1 1 0-2h2.05a7.97 7.97 0 0 1 2.05-4.95L3.64 6.6a1 1 0 0 1 1.41-1.41l1.45 1.45A7.97 7.97 0 0 1 11 4.05V2a1 1 0 0 1 1-1zm0 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10z"></path>
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2.5">
+            <h1 class="font-serif font-medium text-lg lg:text-xl tracking-tight text-anthropic-sand">Tanki Account Control</h1>
+            <span class="text-[11px] font-mono font-medium px-2 py-0.5 rounded-full bg-anthropic-borderDark/60 border border-anthropic-borderDark text-anthropic-stoneMuted">v2.8.4</span>
+          </div>
+          <p class="text-xs text-anthropic-stoneMuted font-sans hidden sm:block">Manage accounts and battle sessions</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-anthropic-cardDark border border-anthropic-borderDark text-xs font-mono">
+          <div class="flex items-center gap-1.5" id="connectionPill">
+            <span class="relative flex h-2 w-2">
+              <span class="status-pulse absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" id="statusPulse"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500" id="statusDot"></span>
+            </span>
+            <span class="text-red-400 font-medium" id="statusText">Disconnected</span>
+          </div>
+          <span class="w-px h-3 bg-anthropic-borderDark"></span>
+          <span class="text-anthropic-stoneMuted" id="pingLatency">-- ms</span>
+          <span class="w-px h-3 bg-anthropic-borderDark hidden md:inline-block"></span>
+          <span class="text-anthropic-sand hidden md:inline-block font-semibold" id="activeWorkersBadge">0/0 active</span>
+        </div>
+
+        <button onclick="openBatchEditModal()"
+          class="px-3.5 py-1.5 rounded-lg bg-anthropic-terracotta hover:bg-anthropic-terracottaHover text-white text-xs font-medium shadow-warmGlow transition-all flex items-center gap-1.5 cursor-pointer">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+          ⚡ Batch Edit
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Layout -->
+  <main class="flex-1 max-w-[1760px] w-full mx-auto p-4 lg:p-6 grid grid-cols-1 xl:grid-cols-12 gap-6">
+
+    <!-- Left Column: Add Account Form -->
+    <section class="xl:col-span-4 flex flex-col gap-6" aria-label="Add Account">
+      <article class="bg-anthropic-cardDark border border-anthropic-borderDark rounded-2xl p-5 shadow-warmBorder backdrop-blur-sm relative overflow-hidden">
+        <div class="absolute -top-12 -right-12 w-32 h-32 bg-anthropic-terracotta/10 rounded-full blur-2xl pointer-events-none"></div>
+
+        <div class="mb-4 border-b border-anthropic-borderDark/60 pb-3">
+          <h2 class="font-serif text-lg font-medium text-anthropic-sand">Add Account</h2>
+          <p class="text-xs text-anthropic-stoneMuted mt-0.5">Provision a new clicker worker</p>
+        </div>
+
+        <form id="addAccountForm" class="space-y-4">
+          <!-- Nickname + Rank -->
+          <div class="grid grid-cols-3 gap-3">
+            <div class="col-span-2">
+              <label class="block text-xs font-medium text-anthropic-stoneLight mb-1.5" for="accountInput">
+                Nickname <span class="text-anthropic-terracotta">*</span>
+              </label>
+              <input id="accountInput" type="text" required placeholder="e.g. Star-Golden_Prime"
+                class="w-full bg-anthropic-bgDark border border-anthropic-borderDark rounded-xl text-sm px-3.5 py-2 text-anthropic-sand placeholder-anthropic-stoneMuted focus:outline-none focus:border-anthropic-terracotta focus:ring-1 focus:ring-anthropic-terracotta font-mono transition-colors">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-anthropic-stoneLight mb-1.5" for="rankInput">Rank</label>
+              <input id="rankInput" type="number" min="1" max="100" value="20" required
+                class="w-full bg-anthropic-bgDark border border-anthropic-borderDark rounded-xl text-sm px-3 py-2 text-anthropic-sand font-mono focus:outline-none focus:border-anthropic-terracotta focus:ring-1 focus:ring-anthropic-terracotta">
+            </div>
+          </div>
+
+          <!-- Password + Side -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-anthropic-stoneLight mb-1.5" for="passwordInput">
+                Password <span class="text-anthropic-terracotta">*</span>
+              </label>
+              <div class="relative">
+                <input id="passwordInput" type="password" required placeholder="Secret password"
+                  class="w-full bg-anthropic-bgDark border border-anthropic-borderDark rounded-xl text-sm px-3.5 py-2 text-anthropic-sand font-mono focus:outline-none focus:border-anthropic-terracotta focus:ring-1 focus:ring-anthropic-terracotta">
+                <button type="button" onclick="togglePasswordVisibility()"
+                  class="absolute right-2.5 top-2 text-anthropic-stoneMuted hover:text-anthropic-sand text-xs font-mono transition-colors">Show</button>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-anthropic-stoneLight mb-1.5" for="sideSelectInput">Team Side</label>
+              <select id="sideSelectInput"
+                class="w-full bg-anthropic-bgDark border border-anthropic-borderDark rounded-xl text-sm px-3 py-2 text-anthropic-sand font-sans focus:outline-none focus:border-anthropic-terracotta focus:ring-1 focus:ring-anthropic-terracotta">
+                <option value="Alpha">Alpha</option>
+                <option value="Bravo">Bravo</option>
+                <option value="Spectator">Spectator</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Battle Link -->
+          <div>
+            <label class="block text-xs font-medium text-anthropic-stoneLight mb-1.5" for="battleLinkInput">Battle Link</label>
+            <input id="battleLinkInput" type="text" placeholder="#/battle=2aaaaabafddececf"
+              class="w-full bg-anthropic-bgDark border border-anthropic-borderDark rounded-xl text-sm px-3.5 py-2 text-anthropic-sand font-mono focus:outline-none focus:border-anthropic-terracotta focus:ring-1 focus:ring-anthropic-terracotta">
+          </div>
+
+          <div class="pt-1">
+            <button type="submit"
+              class="w-full py-2.5 px-4 bg-anthropic-terracotta hover:bg-anthropic-terracottaHover text-white rounded-xl font-medium text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-warmGlow cursor-pointer active:scale-[0.99]">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+              Add Account
+            </button>
+          </div>
+        </form>
+      </article>
+    </section>
+
+    <!-- Right Column: Accounts List -->
+    <section class="xl:col-span-8 flex flex-col" aria-label="Worker Management">
+      <article class="bg-anthropic-cardDark border border-anthropic-borderDark rounded-2xl p-5 shadow-warmBorder backdrop-blur-sm flex flex-col h-full">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 border-b border-anthropic-borderDark/60 pb-3">
+          <div class="flex items-center gap-2">
+            <h2 class="font-serif text-lg font-medium text-anthropic-sand">Accounts</h2>
+            <span id="accountCount" class="px-2 py-0.5 rounded-full text-xs font-mono font-medium bg-anthropic-borderDark text-anthropic-sand">0 Total</span>
+          </div>
+        </div>
+
+        <!-- Search -->
+        <div class="relative mb-3">
+          <input id="searchInput" oninput="renderAccounts()" type="text"
+            placeholder="Search by handle, battle ID, or rank..."
+            class="w-full bg-anthropic-bgDark/80 border border-anthropic-borderDark rounded-xl text-xs px-3.5 py-2 text-anthropic-sand placeholder-anthropic-stoneMuted focus:outline-none focus:border-anthropic-terracotta font-mono">
+          <span class="absolute right-3 top-2.5 text-[10px] text-anthropic-stoneMuted font-mono">⌘K</span>
+        </div>
+
+        <!-- Status Filter Pills -->
+        <div class="flex items-center gap-1.5 mb-4 flex-wrap" id="statusFilterPills">
+          <button onclick="setAccountFilter('all')" data-status-filter="all"
+            class="px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium border bg-anthropic-cardDark text-anthropic-sand border-anthropic-borderDark transition-colors cursor-pointer">All</button>
+          <button onclick="setAccountFilter('clicking')" data-status-filter="clicking"
+            class="px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium border text-anthropic-stoneMuted border-anthropic-borderDark/50 hover:text-emerald-300 transition-colors cursor-pointer">● Clicking</button>
+          <button onclick="setAccountFilter('glitched')" data-status-filter="glitched"
+            class="px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium border text-anthropic-stoneMuted border-anthropic-borderDark/50 hover:text-amber-300 transition-colors cursor-pointer">⚡ Glitched</button>
+          <button onclick="setAccountFilter('loading')" data-status-filter="loading"
+            class="px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium border text-anthropic-stoneMuted border-anthropic-borderDark/50 hover:text-blue-300 transition-colors cursor-pointer">⟳ Loading</button>
+          <button onclick="setAccountFilter('refreshing')" data-status-filter="refreshing"
+            class="px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium border text-anthropic-stoneMuted border-anthropic-borderDark/50 hover:text-sky-300 transition-colors cursor-pointer">↻ Refreshing</button>
+          <button onclick="setAccountFilter('error')" data-status-filter="error"
+            class="px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium border text-anthropic-stoneMuted border-anthropic-borderDark/50 hover:text-rose-300 transition-colors cursor-pointer">✕ Error</button>
+        </div>
+
+        <!-- Accounts Grid -->
+        <div id="accountsList" class="grid grid-cols-1 md:grid-cols-2 gap-3 overflow-y-auto pr-1 flex-1" style="max-height: calc(100vh - 260px);">
+          <!-- Dynamically rendered worker cards -->
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <!-- Edit Account Modal -->
+  <div id="editModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+    <div class="bg-anthropic-cardDark border border-anthropic-borderDark rounded-2xl max-w-md w-full p-6 shadow-warmBorder relative animate-fadeIn">
+      <div class="flex items-center justify-between pb-4 border-b border-anthropic-borderDark">
+        <h3 class="font-serif text-lg font-medium text-anthropic-sand">Edit Worker Settings</h3>
+        <button onclick="closeEditModal()" class="text-anthropic-stoneMuted hover:text-anthropic-sand text-xl font-mono cursor-pointer">&times;</button>
+      </div>
+      <div class="mt-4">
+        <div id="modalAccountName" class="font-mono text-sm font-semibold text-anthropic-terracotta bg-anthropic-bgDark p-2.5 rounded-xl border border-anthropic-borderDark mb-4"></div>
+        <form id="editAccountForm" class="space-y-4">
+          <div>
+            <label class="block text-xs font-medium text-anthropic-stoneLight mb-1.5">Target Battle Link</label>
+            <input id="editBattleLink" type="text" required placeholder="#/battle=2aaaaabafddececf"
+              class="w-full bg-anthropic-bgDark border border-anthropic-borderDark rounded-xl text-sm px-3.5 py-2 text-anthropic-sand font-mono focus:outline-none focus:border-anthropic-terracotta">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-anthropic-stoneLight mb-1.5">Team Side</label>
+            <select id="editSide" required
+              class="w-full bg-anthropic-bgDark border border-anthropic-borderDark rounded-xl text-sm px-3.5 py-2 text-anthropic-sand font-sans focus:outline-none focus:border-anthropic-terracotta">
+              <option value="Alpha">Alpha</option>
+              <option value="Bravo">Bravo</option>
+              <option value="Spectator">Spectator</option>
+            </select>
+          </div>
+          <div class="flex items-center gap-3 pt-2">
+            <button type="submit" class="flex-1 py-2 rounded-xl bg-anthropic-terracotta hover:bg-anthropic-terracottaHover text-white text-xs font-medium font-sans transition-all cursor-pointer">Save Changes</button>
+            <button type="button" onclick="closeEditModal()" class="px-4 py-2 rounded-xl bg-anthropic-borderDark hover:bg-anthropic-borderDark/80 text-anthropic-sand text-xs font-medium font-sans transition-all cursor-pointer">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Batch Edit Modal -->
+  <div id="batchEditModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+    <div class="bg-anthropic-cardDark border border-anthropic-borderDark rounded-2xl max-w-md w-full p-6 shadow-warmBorder relative animate-fadeIn">
+      <div class="flex items-center justify-between pb-4 border-b border-anthropic-borderDark">
+        <h3 class="font-serif text-lg font-medium text-anthropic-sand">⚡ Batch Edit Workers</h3>
+        <button onclick="closeBatchEditModal()" class="text-anthropic-stoneMuted hover:text-anthropic-sand text-xl font-mono cursor-pointer">&times;</button>
+      </div>
+      <div class="mt-4">
+        <div id="batchEditInfo" class="text-xs font-mono text-anthropic-amber bg-amber-950/20 p-2.5 rounded-xl border border-amber-900/30 mb-4">
+          Updating settings across all accounts...
+        </div>
+        <form id="batchEditForm" class="space-y-4">
+          <div>
+            <label class="block text-xs font-medium text-anthropic-stoneLight mb-1.5">Target Battle Link</label>
+            <input id="batchBattleLink" type="text" required placeholder="#/battle=2aaaaabafddececf"
+              class="w-full bg-anthropic-bgDark border border-anthropic-borderDark rounded-xl text-sm px-3.5 py-2 text-anthropic-sand font-mono focus:outline-none focus:border-anthropic-terracotta">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-anthropic-stoneLight mb-1.5">Team Side</label>
+            <select id="batchSide"
+              class="w-full bg-anthropic-bgDark border border-anthropic-borderDark rounded-xl text-sm px-3.5 py-2 text-anthropic-sand font-sans focus:outline-none focus:border-anthropic-terracotta">
+              <option value="">— Keep current side —</option>
+              <option value="Alpha">Alpha</option>
+              <option value="Bravo">Bravo</option>
+              <option value="Spectator">Spectator</option>
+            </select>
+          </div>
+          <div class="flex items-center gap-3 pt-2">
+            <button type="submit" class="flex-1 py-2 rounded-xl bg-anthropic-terracotta hover:bg-anthropic-terracottaHover text-white text-xs font-medium font-sans transition-all cursor-pointer">Apply to All</button>
+            <button type="button" onclick="closeBatchEditModal()" class="px-4 py-2 rounded-xl bg-anthropic-borderDark hover:bg-anthropic-borderDark/80 text-anthropic-sand text-xs font-medium font-sans transition-all cursor-pointer">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="/client.js"></script>
+</body>
+
+</html>
