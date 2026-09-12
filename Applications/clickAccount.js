@@ -50,7 +50,7 @@ async function clickAccount(Nickname, Password, rank, Map, Side, io, tankiConfig
       return null;
     }
 
-    pingCaptchaSolverPool();
+    // pingCaptchaSolverPool();
 
     // On user stop click account
     logger.loggerIoEvent(`stop-click-${Nickname}`, listener, io);
@@ -517,7 +517,9 @@ async function clickAccount(Nickname, Password, rank, Map, Side, io, tankiConfig
             argumentValues: { playerId },
           } = data;
 
-          pingCaptchaSolverPool();
+
+
+          // pingCaptchaSolverPool();
 
           if (objectId == Map) {
             BattleObject.removePlayer(playerId);
@@ -546,7 +548,7 @@ async function clickAccount(Nickname, Password, rank, Map, Side, io, tankiConfig
             }
           }
 
-          BattleObject.print();
+          // BattleObject.print();
         });
 
         logger.info(`[${Nickname} - Clicking]`);
@@ -555,15 +557,16 @@ async function clickAccount(Nickname, Password, rank, Map, Side, io, tankiConfig
 
         const freeSpotListener = async (leaveSide, playerId) => {
           if (leaveSide !== Side) return;
+          const freeSpotReceivedAt = performance.now();
+          clickPacket(1, freeSpotReceivedAt);
           logger.info("Free spot found", leaveSide, playerId);
-          clickPacket();
 
           setTimeout(() => {
             if (isClicking) {
               logger.info("Clicking again");
               clickPacket();
             }
-          }, 500);
+          }, 100);
         };
 
         BattleObject.onFreeSpot(freeSpotListener);
@@ -571,7 +574,7 @@ async function clickAccount(Nickname, Password, rank, Map, Side, io, tankiConfig
 
         // Send one initial click; freeSpotListener handles all subsequent clicks
         clickPacket();
-        handleCaptchaSolving();
+        // handleCaptchaSolving();
 
         logger.info(`Time taken to start clicking: ${(performance.now() - start_time) / 1000} seconds`);
         await spaceThree.waitForClose(); // Infinite wait dont exit early
@@ -589,8 +592,12 @@ async function clickAccount(Nickname, Password, rank, Map, Side, io, tankiConfig
       return setInterval(clickPacket, intervalSpeed);
     }
 
-    async function clickPacket(packets = 1) {
+    async function clickPacket(packets = 1, freeSpotReceivedAt = null) {
       await spaceSeven.sendPacket("CL_joinBattle", { mapLink: Map, side: Side, packets });
+
+      if (freeSpotReceivedAt !== null) {
+        logger.info(`[${Nickname} - Free spot to join packet sent: ${(performance.now() - freeSpotReceivedAt).toFixed(2)} ms]`);
+      }
 
       const currentTime = new Date().getTime();
       const timeSinceLastPacket = currentTime - lastPacketTime;
