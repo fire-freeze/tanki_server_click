@@ -5,7 +5,7 @@ import Logger from "../../Logger/Logger.js";
 import methods from "../../Commands/spaceCommands/methodIds.js";
 import { hstab, bufToHex } from "../space-utils/PacketHelper.js";
 import { CL_dependeciesLoadedTwo } from "../../Commands/spaceCommands/commands.js";
-import { HttpsProxyAgent } from "https-proxy-agent";
+import { getProxyAgent } from "../space-utils/proxyAgent.js";
 
 const spaceIdString = "920007382011"; // Used for logs
 const spaceIdInString = "000000d634b693fb";
@@ -38,7 +38,7 @@ class SpaceThree extends Space {
 
   connectToServer() {
     return new Promise((resolve, reject) => {
-      this.socket = new WebSocket(this.connectionString, { agent: this.proxyUrl == "" ? null : new HttpsProxyAgent(this.proxyUrl) });
+      this.socket = new WebSocket(this.connectionString, { agent: getProxyAgent(this.proxyUrl) });
       this.cypher = new Cypher(this.hash, this.spaceId);
       this.socket.binaryType = "arraybuffer";
 

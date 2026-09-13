@@ -194,6 +194,7 @@ async function leaveAccount(Nickname, Password, leave, reconnectServer = null, i
 
             spaceFour.waitForPacket("MoveUserToServerModelBase_move").then((data) => {
               accountState.ReconnectServer = data.Server;
+              logger.info(`Reconnect server from leaveAccount - ${Nickname} - ${accountState.ReconnectServer}`);
               if (accountState.ReconnectServer !== "") {
                 const reconnectServer = parseInt(accountState.ReconnectServer);
                 if (accountState.Server !== reconnectServer) logger.info(`${Nickname} - Account must switch to server ${reconnectServer}`);
@@ -218,7 +219,7 @@ async function leaveAccount(Nickname, Password, leave, reconnectServer = null, i
             // await spaceFour.sendPacket("CL_gpuDetection")
             // await spaceFour.sendPacket("CL_logTrackers")
             // await spaceFour.sendPacket("CL_logGpuReport")
-            await spaceFour.sendPacket("CL_premEnded");
+            // await spaceFour.sendPacket("CL_premEnded");
           })
           .catch((err) => {
             logger.error(err);

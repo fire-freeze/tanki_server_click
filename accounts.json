@@ -3,61 +3,61 @@
     "account": "Star-Golden",
     "password": "babylon",
     "rank": 20,
-    "proxyUrl": ""
+    "proxyUrl": "socks5://199.58.185.9:4145"
   },
   {
     "account": "hazard_0",
     "password": "chch1234$",
     "rank": 20,
-    "proxyUrl": ""
+    "proxyUrl": "socks5://192.252.215.2:4145"
   },
   {
     "account": "DAZZLING_PHANTOM",
     "password": "OMNITRIX",
     "rank": 20,
-    "proxyUrl": ""
+    "proxyUrl": "socks5://72.195.34.58:4145"
   },
   {
     "account": "Space-X",
     "password": "hellomello1234$",
     "rank": 20,
-    "proxyUrl": ""
+    "proxyUrl": "socks5://199.116.112.6:4145"
   },
   {
     "account": "Click_Master",
     "password": "chch1234$",
     "rank": 20,
-    "proxyUrl": ""
+    "proxyUrl": "socks5://67.201.35.145:4145"
   },
   {
     "account": "sugar_001",
     "password": "chch1234$",
     "rank": 20,
-    "proxyUrl": ""
+    "proxyUrl": "socks5://198.8.94.170:4145"
   },
   {
     "account": "sugar_002",
     "password": "chch1234$",
     "rank": 20,
-    "proxyUrl": ""
+    "proxyUrl": "socks5://74.119.147.209:4145"
   },
   {
     "account": "sugar_003",
     "password": "chch1234$",
     "rank": 20,
-    "proxyUrl": ""
+    "proxyUrl": "socks5://72.194.42.131:4145"
   },
   {
     "account": "firefreeze",
     "password": "chch1234$",
     "rank": 20,
-    "proxyUrl": ""
+    "proxyUrl": "socks5://192.252.216.86:4145"
   },
   {
     "account": "ZerefDragneel",
     "password": "fairytail1234$",
     "rank": 20,
-    "proxyUrl": "",
+    "proxyUrl": "socks5://72.195.114.169:4145",
     "battleLink": "#/battle=2aaaaabafddececf",
     "side": "Alpha"
   },
@@ -65,36 +65,36 @@
     "account": "sugar_004",
     "password": "chch1234$",
     "rank": 20,
-    "proxyUrl": ""
+    "proxyUrl": "socks5://206.220.175.2:4145"
   },
   {
     "account": "Goldik69",
     "password": "chch1234$",
     "rank": 20,
-    "proxyUrl": ""
+    "proxyUrl": "socks5://192.252.216.81:4145"
   },
   {
     "account": "Best_Tanker",
     "password": "chch1234$",
     "rank": 20,
-    "proxyUrl": ""
+    "proxyUrl": "socks5://192.111.139.162:4145"
   },
   {
     "account": "sugar_110",
     "password": "chch1234$",
     "rank": 20,
-    "proxyUrl": ""
+    "proxyUrl": "socks5://72.205.0.67:4145"
   },
   {
     "account": "Killer_100",
     "password": "hellomello1234$",
     "rank": 20,
-    "proxyUrl": ""
+    "proxyUrl": "socks5://98.188.47.150:4145"
   },
   {
     "account": "Bloodstains",
     "password": "chch1234$",
     "rank": 20,
-    "proxyUrl": ""
+    "proxyUrl": "socks5://98.175.31.195:4145"
   }
 ]

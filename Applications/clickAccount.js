@@ -191,7 +191,7 @@ async function clickAccount(Nickname, Password, rank, Map, Side, io, tankiConfig
               // clickAccount(Nickname, Password, false, null, io, tankiConfig, proxyUrl);
 
               leaveAccount(Nickname, Password, false, null, io, tankiConfig, proxyUrl);
-          }, 75 * 100);
+          }, 7500);
           resolve(`[${Nickname}`);
           return;
         }
@@ -214,7 +214,7 @@ async function clickAccount(Nickname, Password, rank, Map, Side, io, tankiConfig
         if (hasGlitched && isClicking && !isDeadMap) {
           // Points
           controlChannel.goodConnection(3);
-          onGlitched();
+          onGlitched(accountState.ReconnectServer);
           return;
         }
 
@@ -354,15 +354,15 @@ async function clickAccount(Nickname, Password, rank, Map, Side, io, tankiConfig
 
           // Packet that arrives when account is in map and needs to be moved
           spaceFour.registerPacket("MoveUserToServerModelBase_move", (data) => {
-            onGlitched();
             accountState.ReconnectServer = data.Server;
+            onGlitched(accountState.ReconnectServer);
             controlChannel.setReconnectLink(parseInt(data.Server), Map);
             logger.info("Reconnect server set to: ", data.Server);
           });
 
           // Packet that arrives when the account is in a map (This is equivilent to getting an error in the game)
           spaceFour.registerPacket("LobbyLayoutNotifyModelBase_cancelPredictedLayoutSwitch", (data) => {
-            onGlitched();
+            onGlitched(accountState.ReconnectServer || null);
           });
 
           // Packet that arrives when account is on the battle list
@@ -388,7 +388,7 @@ async function clickAccount(Nickname, Password, rank, Map, Side, io, tankiConfig
           // await spaceFour.sendPacket("CL_gpuDetection")
           // await spaceFour.sendPacket("CL_logTrackers")
           // await spaceFour.sendPacket("CL_logGpuReport")
-          await spaceFour.sendPacket("CL_premEnded");
+          // await spaceFour.sendPacket("CL_premEnded");
         })
         .catch((err) => {
           logger.error(err);
@@ -451,7 +451,7 @@ async function clickAccount(Nickname, Password, rank, Map, Side, io, tankiConfig
       .waitForPacket("SV_OpenSpace", "Space Eight", false)
       .then(async (data) => {
         controlChannel.setReconnectLink(connectionString.split("c")[1].split(".")[0], data);
-        onGlitched();
+        onGlitched(accountState.ReconnectServer || null);
         closeAll();
       })
       .catch(() => {
@@ -505,7 +505,7 @@ async function clickAccount(Nickname, Password, rank, Map, Side, io, tankiConfig
           BattleObject.addPlayer(playerId, stringSide);
 
           if (playerId == accountState.ID) {
-            onGlitched();
+            onGlitched(accountState.ReconnectServer || null);
           }
 
           console.log(`Player ${playerId} joined the battle in side ${stringSide}`);
@@ -523,6 +523,7 @@ async function clickAccount(Nickname, Password, rank, Map, Side, io, tankiConfig
 
           if (objectId == Map) {
             BattleObject.removePlayer(playerId);
+            logger.success(`[${Nickname} - Player ${playerId} left the battle in side ${Side}]`);
           }
         });
 
@@ -548,7 +549,7 @@ async function clickAccount(Nickname, Password, rank, Map, Side, io, tankiConfig
             }
           }
 
-          // BattleObject.print();
+          BattleObject.print();
         });
 
         logger.info(`[${Nickname} - Clicking]`);
@@ -558,7 +559,7 @@ async function clickAccount(Nickname, Password, rank, Map, Side, io, tankiConfig
         const freeSpotListener = async (leaveSide, playerId) => {
           if (leaveSide !== Side) return;
           const freeSpotReceivedAt = performance.now();
-          clickPacket(1, freeSpotReceivedAt);
+          clickPacket(2, freeSpotReceivedAt);
           logger.info("Free spot found", leaveSide, playerId);
 
           setTimeout(() => {
@@ -566,11 +567,12 @@ async function clickAccount(Nickname, Password, rank, Map, Side, io, tankiConfig
               logger.info("Clicking again");
               clickPacket();
             }
-          }, 100);
+          }, 500);
         };
 
         BattleObject.onFreeSpot(freeSpotListener);
         battleMapResetListener = () => BattleObject.removeFreeSpotListener(freeSpotListener);
+        // clickingInterval = createClickingInterval({ startImmediate: true });
 
         // Send one initial click; freeSpotListener handles all subsequent clicks
         clickPacket();
@@ -663,8 +665,8 @@ async function clickAccount(Nickname, Password, rank, Map, Side, io, tankiConfig
 
       setTimeout(() => {
         if (!hasBeenClosedByUser) {
-          logger.info(`[${Nickname}] - Restarting clicker after 3 minutes in battle`);
-
+          logger.info(`[${Nickname}] - refreshing after 3 minutes in battle`);
+          // leaveAccount(Nickname, Password, false, reconnectServer, io, tankiConfig, proxyUrl)
           clickAccount(
             Nickname,
             Password,

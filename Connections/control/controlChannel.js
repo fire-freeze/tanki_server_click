@@ -2,7 +2,7 @@ import CL_HashRequest from "../../Commands/controlCommands/hashRequest.js";
 import WebSocket from "ws";
 import { hstab, bufToHex } from "../space-utils/PacketHelper.js";
 import Logger from "../../Logger/Logger.js";
-import { HttpsProxyAgent } from "https-proxy-agent";
+import { getProxyAgent } from "../space-utils/proxyAgent.js";
 const serverScores = {
   "c1.eu.tankionline.com": { score: 100, totalConnections: 0, reconnectMaps: [] },
   "c2.eu.tankionline.com": { score: 100, totalConnections: 0, reconnectMaps: [] },
@@ -54,8 +54,9 @@ class ControlChannel {
 
   connectToServer() {
     return new Promise((resolve, reject) => {
+      this.logger.info(`[PROXY] ${this.proxyUrl ? `Using proxy: ${this.proxyUrl}` : "No proxy"}`);
       this.socket = new WebSocket(this.connectionString, {
-        agent: this.proxyUrl == "" ? null : new HttpsProxyAgent(this.proxyUrl),
+        agent: getProxyAgent(this.proxyUrl),
       });
 
       this.socket.binaryType = "arraybuffer";

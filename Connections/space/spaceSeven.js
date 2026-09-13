@@ -6,7 +6,7 @@ import { hstab, bufToHex } from "../space-utils/PacketHelper.js";
 import Logger from "../../Logger/Logger.js";
 import { CL_dependeciesLoadedTwo, joinBattle } from "../../Commands/spaceCommands/commands.js";
 import { BattleInfoCC_Parser, packetsParser } from "../../Commands/spaceCommands/packetsParser.js";
-import { HttpsProxyAgent } from "https-proxy-agent";
+import { getProxyAgent } from "../space-utils/proxyAgent.js";
 const spaceIdString = "100119070"; // Used for logs
 const spaceIdInString = "0000000005f7b21e";
 import uncompressZlib from "../space-utils/PacketslibCompression.js";
@@ -35,7 +35,7 @@ class SpaceSeven extends Space {
 
   connectToServer() {
     return new Promise((resolve, reject) => {
-      this.socket = new WebSocket(this.connectionString, { agent: this.proxyUrl == "" ? null : new HttpsProxyAgent(this.proxyUrl) });
+      this.socket = new WebSocket(this.connectionString, { agent: getProxyAgent(this.proxyUrl) });
       this.socket.binaryType = "arraybuffer";
       this.cypher = new Cypher(this.hash, this.spaceId);
 

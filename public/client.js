@@ -48,15 +48,15 @@ const batchEditForm = document.getElementById('batchEditForm');
 
 // Lightweight console-based logger stub (terminal UI removed)
 const logger = {
-    log:     (level, tag, msg, d) => console.log(tag, msg, d !== undefined ? d : ''),
-    info:    (msg, d) => console.log('[INFO]', msg, d !== undefined ? d : ''),
+    log: (level, tag, msg, d) => console.log(tag, msg, d !== undefined ? d : ''),
+    info: (msg, d) => console.log('[INFO]', msg, d !== undefined ? d : ''),
     success: (msg, d) => console.log('[SUCCESS]', msg, d !== undefined ? d : ''),
-    error:   (msg, d) => console.error('[ERROR]', msg, d !== undefined ? d : ''),
+    error: (msg, d) => console.error('[ERROR]', msg, d !== undefined ? d : ''),
     warning: (msg, d) => console.warn('[WARN]', msg, d !== undefined ? d : ''),
     account: (msg, d) => console.log('[ACCOUNT]', msg, d !== undefined ? d : ''),
-    click:   (msg, d) => console.log('[CLICK]', msg, d !== undefined ? d : ''),
-    clear:   () => {},
-    rebuild: () => {},
+    click: (msg, d) => console.log('[CLICK]', msg, d !== undefined ? d : ''),
+    clear: () => { },
+    rebuild: () => { },
 };
 
 function escapeHtml(str) {
@@ -115,13 +115,13 @@ function saveAccountSettings(index) {
 function getStatusConfig(status) {
     if (!status) return { group: 'standby', dot: 'bg-anthropic-borderDark', badge: 'text-anthropic-stoneMuted bg-anthropic-borderDark/40 border-anthropic-borderDark/50', label: 'Standby' };
     const s = status.toLowerCase();
-    if (s === 'clicking')                         return { group: 'clicking',   dot: 'bg-emerald-400 status-pulse',             badge: 'text-emerald-300 bg-emerald-950/50 border-emerald-700/40',            label: 'Clicking' };
-    if (s === 'glitched')                         return { group: 'glitched',   dot: 'bg-amber-400 status-pulse',               badge: 'text-amber-300 bg-amber-950/50 border-amber-700/40',                  label: 'Glitched', countdown: true };
-    if (s.includes('unglitch'))                   return { group: 'refreshing', dot: 'bg-anthropic-terracotta status-pulse',     badge: 'text-anthropic-terracotta bg-anthropic-terracottaMuted border-anthropic-terracotta/30', label: 'Unglitching' };
-    if (s === 'refreshing')                       return { group: 'refreshing', dot: 'bg-sky-400 status-pulse',                 badge: 'text-sky-300 bg-sky-950/50 border-sky-700/40',                        label: 'Refreshing' };
+    if (s === 'clicking') return { group: 'clicking', dot: 'bg-emerald-400 status-pulse', badge: 'text-emerald-300 bg-emerald-950/50 border-emerald-700/40', label: 'Clicking' };
+    if (s === 'glitched') return { group: 'glitched', dot: 'bg-amber-400 status-pulse', badge: 'text-amber-300 bg-amber-950/50 border-amber-700/40', label: 'Glitched', countdown: true };
+    if (s.includes('unglitch')) return { group: 'refreshing', dot: 'bg-anthropic-terracotta status-pulse', badge: 'text-anthropic-terracotta bg-anthropic-terracottaMuted border-anthropic-terracotta/30', label: 'Unglitching' };
+    if (s === 'refreshing') return { group: 'refreshing', dot: 'bg-sky-400 status-pulse', badge: 'text-sky-300 bg-sky-950/50 border-sky-700/40', label: 'Refreshing' };
     if (s.includes('loading') || s.includes('connecting')) return { group: 'loading', dot: 'bg-blue-400 status-pulse', badge: 'text-blue-300 bg-blue-950/50 border-blue-700/40', label: status };
-    if (s === 'paused')                           return { group: 'other',      dot: 'bg-purple-400',                           badge: 'text-purple-300 bg-purple-950/50 border-purple-700/40',               label: 'Paused' };
-    if (s.includes('timeout') || s.includes('error')) return { group: 'error', dot: 'bg-rose-500',                            badge: 'text-rose-300 bg-rose-950/50 border-rose-700/40',                    label: 'Error' };
+    if (s === 'paused') return { group: 'other', dot: 'bg-purple-400', badge: 'text-purple-300 bg-purple-950/50 border-purple-700/40', label: 'Paused' };
+    if (s.includes('timeout') || s.includes('error')) return { group: 'error', dot: 'bg-rose-500', badge: 'text-rose-300 bg-rose-950/50 border-rose-700/40', label: 'Error' };
     return { group: 'other', dot: 'bg-anthropic-sage status-pulse', badge: 'text-anthropic-sage bg-anthropic-sageDark/40 border-anthropic-sage/20', label: status };
 }
 
@@ -167,7 +167,7 @@ function renderAccounts() {
 
         // Side badge
         let sideBadgeClass = 'bg-blue-950/60 border-blue-800/50 text-blue-300';
-        if (account.side === 'Bravo')     sideBadgeClass = 'bg-rose-950/60 border-rose-800/50 text-rose-300';
+        if (account.side === 'Bravo') sideBadgeClass = 'bg-rose-950/60 border-rose-800/50 text-rose-300';
         else if (account.side === 'Spectator') sideBadgeClass = 'bg-purple-950/60 border-purple-800/50 text-purple-300';
 
         // Glitch countdown (only for Glitched status)
@@ -182,7 +182,7 @@ function renderAccounts() {
                 <div class="mt-2 rounded-lg bg-amber-950/30 border border-amber-800/30 px-2.5 py-1.5">
                     <div class="flex items-center justify-between text-[11px] font-mono mb-1.5">
                         <span class="text-amber-400/70">Re-clicking in</span>
-                        <span class="text-amber-300 font-semibold tabular-nums" data-countdown-end="${endTime}">${mins}:${String(secs).padStart(2,'0')}</span>
+                        <span class="text-amber-300 font-semibold tabular-nums" data-countdown-end="${endTime}">${mins}:${String(secs).padStart(2, '0')}</span>
                     </div>
                     <div class="w-full h-1 rounded-full bg-amber-950/60">
                         <div class="h-1 rounded-full bg-amber-500/70 transition-all duration-1000" data-countdown-bar="${endTime}" style="width:${pct}%"></div>
@@ -245,12 +245,12 @@ function updateHeaderBadges() {
 function setAccountFilter(filter) {
     statusFilter = filter;
     const colorMap = {
-        'all':        'bg-anthropic-cardDark text-anthropic-sand border-anthropic-borderDark',
-        'clicking':   'bg-emerald-950/60 text-emerald-300 border-emerald-700/40',
-        'glitched':   'bg-amber-950/60 text-amber-300 border-amber-700/40',
-        'loading':    'bg-blue-950/60 text-blue-300 border-blue-700/40',
+        'all': 'bg-anthropic-cardDark text-anthropic-sand border-anthropic-borderDark',
+        'clicking': 'bg-emerald-950/60 text-emerald-300 border-emerald-700/40',
+        'glitched': 'bg-amber-950/60 text-amber-300 border-amber-700/40',
+        'loading': 'bg-blue-950/60 text-blue-300 border-blue-700/40',
         'refreshing': 'bg-sky-950/60 text-sky-300 border-sky-700/40',
-        'error':      'bg-rose-950/60 text-rose-300 border-rose-700/40',
+        'error': 'bg-rose-950/60 text-rose-300 border-rose-700/40',
     };
     document.querySelectorAll('#statusFilterPills button').forEach(p => {
         const pf = p.getAttribute('data-status-filter');
@@ -320,7 +320,7 @@ async function addNewAccount(e) {
     const rank = parseInt(document.getElementById('rankInput').value) || 20;
     const side = document.getElementById('sideSelectInput').value || DEFAULT_SIDE;
     const battleLink = (document.getElementById('battleLinkInput')?.value.trim()) || DEFAULT_BATTLE_LINK;
-    const proxyUrl = "";
+    const proxyUrl = "http://109.199.119.160:80";
 
     if (!nickname || !password) {
         logger.error('Account name and password are required.');
